@@ -6,14 +6,22 @@ const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
 const secretOrKey = require("../../config/keys").secretOrKey;
 const passport = require("passport");
-
+//isEmpty function
+const isEmpty = require("../../validation/is-empty");
+//validate register
+const validateRigestration = require("../../validation/register");
+//validae login
+const validateLogin = require("../../validation/login");
 //@route POST /users/api/register
 //@params [name , email , password,password2]
 //@desc register new user
 
 router.post("/register", (req, res) => {
+  const { isValid, errors } = validateRigestration(req.body);
+  if (!isValid) {
+    return res.status(405).json(errors);
+  }
   const email = req.body.email;
-
   User.findOne({ email })
     .then(user => {
       if (!user) {
@@ -47,6 +55,10 @@ router.post("/register", (req, res) => {
 router.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const { isValid, errors } = validateLogin(req.body);
+  if (!isValid) {
+    res.status(405).json(errors);
+  }
   User.findOne({ email }).then(user => {
     if (!user) {
       res.status(404).json({ msg: "user not found" });
