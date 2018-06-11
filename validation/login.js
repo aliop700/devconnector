@@ -6,13 +6,13 @@ const validateLogin = user => {
   user.email = !isEmpty(user.email) ? user.email : "";
   //   console.log(user.email);
   const errors = {};
-  if (!Validator.isEmpty(user.email)) {
+  if (Validator.isEmpty(user.email)) {
     errors.email = "Email is required";
   }
   if (!Validator.isEmail(user.email)) {
     errors.email = "Please enter valid email";
   }
-  if (!Validator.isEmpty(user.password)) {
+  if (Validator.isEmpty(user.password)) {
     errors.password = "Password is required";
   }
   return {
