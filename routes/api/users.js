@@ -6,7 +6,7 @@ const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
 const secretOrKey = require("../../config/keys").secretOrKey;
 const passport = require("passport");
-//isEmpty function
+///isEmpty function
 const isEmpty = require("../../validation/is-empty");
 //validate register
 const validateRigestration = require("../../validation/register");
