@@ -34,12 +34,13 @@ router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const { isValid, error } = validateProfile(req.body);
+    let { isValid, errors } = validateProfile(req.body);
     if (!isValid) {
-      res.status(400).json(error);
+      return res.status(400).json(errors);
     }
     errors = {};
     profileFields = {};
+    profileFields.user = req.user.id;
     if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.company) profileFields.company = req.body.company;
     if (req.body.website) profileFields.website = req.body.website;
