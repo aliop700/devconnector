@@ -27,4 +27,5 @@ const posts = require("./routes/api/posts");
 //use these routes
 app.use("/api/users", users);
 app.use("/api/profile", profiles);
+app.use("api/post", posts);
 app.listen(3000, () => console.log("listenong"));
