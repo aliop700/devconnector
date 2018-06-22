@@ -122,3 +122,72 @@ router.post(
     newPost.save().then(post => res.json(post));
   }
 );
+
+//@route POST /api/post/comment:id
+//@desc add new comment
+//@access private
+
+router.post(
+  "/comment/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const { isValid, errors } = validatePost(req.body);
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+    Post.findById(req.params.id)
+      .then(post => {
+        const newComment = {
+          name: req.body.name,
+          avatar: req.body.avatar,
+          text: req.body.text,
+          user: req.user.id
+        };
+
+        post.comments.unshift(newComment);
+
+        post.save().then(post => res.json(post));
+      })
+      .catch(err =>
+        res.status(404).json({ success: false, msg: "post not found" })
+      );
+  }
+);
+
+//@route DELETE /api/post/comment:id
+//@desc DELETE comment
+//@access private
+
+router.delete(
+  "/comment/:id/:comment_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Post.findById(req.params.id)
+      .then(post => {
+        const removeIndex = post.comments
+          .map(item => item._id.toString)
+          .indexOf(req.params.comment_id);
+
+        if (removeIndex !== -1) {
+          if (post.comments[removeIndex].user.toString() !== req.user.id) {
+            return res
+              .status(404)
+              .json({ success: false, msg: "not authorzed to delete comment" });
+          }
+
+          post.comments.splice(removeIndex, 1);
+
+          post.save().then(post => res.json(post));
+        } else {
+          return res
+            .status(404)
+            .json({ success: false, msg: "comment not found" });
+        }
+      })
+      .catch(err =>
+        res.status(404).json({ success: false, msg: "post not found" })
+      );
+  }
+);
+
+module.exports = router;
